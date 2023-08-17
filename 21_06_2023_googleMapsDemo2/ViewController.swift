@@ -18,10 +18,11 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         initializationOMapView()
         
+        
       let cameraPosition =  GMSCameraPosition(
         latitude: 18.5092,
         longitude: 73.8325,
-        zoom: 20.0)
+        zoom: 15.0)
         googleMapView.camera = cameraPosition
         bitcodePosition = CLLocationCoordinate2D(
             latitude: 18.5092,
@@ -32,6 +33,10 @@ class ViewController: UIViewController {
                                    longitude: 73.8553)
         GMSCameraUpdate.setTarget(bitcodePosition!, zoom: 50.0)
         showMyMarker(position : bitcodePosition!)
+        drawCircleOnMap(position: bitcodePosition!)
+//      drawPolygonOnMap()
+//      drawPolylineOnMap()
+        
     }
     
     func showMyMarker(position : CLLocationCoordinate2D){
@@ -58,8 +63,46 @@ class ViewController: UIViewController {
         googleMapView.isBuildingsEnabled = true
         googleMapView.isMyLocationEnabled = true
     }
+    
+    func drawPolygonOnMap(){
+       let gmsPathForPolygon = GMSMutablePath()
+        gmsPathForPolygon.add(CLLocationCoordinate2D(latitude: 18.5115, longitude: 73.8130))
+        gmsPathForPolygon.add(CLLocationCoordinate2D(latitude: 18.5693, longitude: 73.8723))
+        gmsPathForPolygon.add(CLLocationCoordinate2D(latitude: 18.5204, longitude: 73.9142))
+        gmsPathForPolygon.add(CLLocationCoordinate2D(latitude: 18.4444, longitude: 73.8635))
+        
+        let polygonPath = GMSPolygon(path: gmsPathForPolygon)
+        polygonPath.fillColor = .lightGray
+        polygonPath.strokeColor = .brown
+        polygonPath.strokeWidth = 6.0
+        
+        polygonPath.map = googleMapView
+    }
+    
+    func drawPolylineOnMap(){
+        let gmsPathForPolyLine = GMSMutablePath()
+        gmsPathForPolyLine.add(CLLocationCoordinate2D(latitude: 19.3938, longitude: 73.5693))
+        gmsPathForPolyLine.add(CLLocationCoordinate2D(latitude: 20.6883, longitude: 76.9482))
+        gmsPathForPolyLine.add(CLLocationCoordinate2D(latitude: 19.0463, longitude: 77.3380))
+        gmsPathForPolyLine.add(CLLocationCoordinate2D(latitude: 16.7475, longitude: 74.2868))
+        gmsPathForPolyLine.add(CLLocationCoordinate2D(latitude: 19.3938, longitude: 73.5693))
+        
+        let polylinePath = GMSPolygon(path: gmsPathForPolyLine)
+        polylinePath.fillColor = .orange
+        polylinePath.strokeColor = .black
+        polylinePath.strokeWidth = 7.0
+        
+        polylinePath.map = googleMapView
+    }
+    
+    func drawCircleOnMap(position : CLLocationCoordinate2D){
+       let gmsCirclePath = GMSCircle(position: position, radius: 20.0)
+        gmsCirclePath.strokeWidth = 7.0
+        gmsCirclePath.strokeColor = .brown
+        gmsCirclePath.fillColor = .cyan
+        gmsCirclePath.map = googleMapView
+    }
 }
-
 
 extension ViewController:GMSMapViewDelegate{
     func mapView(_ mapView: GMSMapView, didDrag marker: GMSMarker) {
@@ -82,7 +125,11 @@ extension ViewController:GMSMapViewDelegate{
         labelOne.textColor = .black
         infoWindow!.addSubview(labelOne)
         
-        let labelTwo = UILabel(frame: CGRect(x: Int(labelOne.frame.minX), y: Int(labelOne.frame.height) + 20, width: Int(labelOne.frame.width), height: Int(labelOne.frame.height)))
+        let labelTwo = UILabel(frame: CGRect(
+            x: Int(labelOne.frame.minX),
+            y: Int(labelOne.frame.height) + 20,
+            width: Int(labelOne.frame.width),
+            height: Int(labelOne.frame.height)))
         labelTwo.textColor = .black
         labelTwo.text = "IT Training"
         labelTwo.backgroundColor = .cyan
@@ -90,4 +137,18 @@ extension ViewController:GMSMapViewDelegate{
         
         return infoWindow
     }
+    
+    func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
+        
+        print(marker.position.latitude)
+        
+        return true
+    }
+    
+    func mapView(_ mapView: GMSMapView, didTapInfoWindowOf marker: GMSMarker) {
+        print("\(marker.position.latitude) -- \(marker.position.longitude)")
+    }
+    
+    
+    
 }
